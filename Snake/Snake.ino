@@ -1,13 +1,12 @@
 
-
 uint8_t rowPins[8] = { 10, 11, 12, 13, A0, A1, A2, A3 };
 uint8_t colPins[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
-
-
 #define joyX A4
 #define joyY A5
 int xValue, yValue;
-
+byte mapWithFood[8] = { B00111000, B00111000, B00111000, B00111000, B00111000, B00111000, B00111000, B00111000 };
+String character = "";
+bool ate;
 void setup() {
 
   Serial.begin(9600);
@@ -18,24 +17,70 @@ void setup() {
   }
 }
 
+
 void loop() {
 
-  byte character[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  xValue = analogRead(joyX);
+
+  /*xValue = analogRead(joyX);
   yValue = analogRead(joyY);
   Serial.print(xValue);
   Serial.print("\t");
-  Serial.println(yValue);
-
-  for (int row = 0; row < 8; row++) {                         
-    for (int k = 0; k < 8; k++) digitalWrite(colPins[k], HIGH);  
-    digitalWrite(rowPins[row], HIGH);                            
-    for (int col = 0; col < 8; col++) {
-      digitalWrite(colPins[7 - col], character[row] & 1 << col ? LOW : HIGH);
+  Serial.println(yValue);*/
+  if(ate){
+    FoodSpawn();
+  }
+  for (int rows = 0; rows < 8; rows++) {
+    for (int k = 0; k < 8; k++) digitalWrite(colPins[k], HIGH);
+    digitalWrite(rowPins[rows], HIGH);
+    for (int cols = 0; cols < 8; cols++) {
+      digitalWrite(colPins[7 - cols], mapWithFood[rows] & 1 << cols ? LOW : HIGH);
     }
     delay(5);
-    digitalWrite(rowPins[row], LOW);
+    digitalWrite(rowPins[rows], LOW);
   }
 }
 
+void FoodSpawn() {
+  byte row, col, zeros;
+  character = "";
+  row = random(0, 8);
+  col = random(0, 8);
+  Serial.print("Row: ");
+  Serial.print(row);
+  Serial.print(" \tCol: ");
+  Serial.print(col);
+  Serial.println("");
+  Serial.print("mapWithFood[row]: ");
+  Serial.print(mapWithFood[row]);
+  Serial.println("");
+  for (int i = 8; i >= 0; i--) {
+    if (mapWithFood[row] - (byte(pow(2, i))) > 0) {
+      mapWithFood[row] -=byte(pow(2, i));
+      character = character + "1";
+    } else if ((mapWithFood[row] - (byte(pow(2, i))) < 0)) {
+      character = character + "0";
+      
+    }
+  }
+  Serial.print("character: ");
+  Serial.print(character);
+  Serial.println("");
 
+
+  Serial.print("character.charAt(col)");
+  Serial.print(character.charAt(col));
+  Serial.println("");
+  if (character.charAt(col) == '0') {
+    character.setCharAt(col, '1');
+    Serial.print("character.charAt(col)");
+    Serial.print(character.charAt(col));
+    Serial.println("");
+  }
+  mapWithFood[row] = byte(character.toInt());
+  ate=false;
+  for (int i = 0; i < 8; i++) {
+    Serial.print(mapWithFood[i], BIN);
+    Serial.print(",");
+  }
+  Serial.println("");
+}
