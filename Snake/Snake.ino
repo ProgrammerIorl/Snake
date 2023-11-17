@@ -4,7 +4,7 @@ uint8_t colPins[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
 #define joyX A4
 #define joyY A5
 int xValue, yValue;
-byte mapWithFood[8] = { B00111000, B00111000, B00111000, B00111000, B00111000, B00111000, B00111000, B00111000 };
+byte mapWithFood[8] = { B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000 };
 String character = "";
 bool ate;
 void setup() {
@@ -27,6 +27,7 @@ void loop() {
   Serial.print("\t");
   Serial.println(yValue);*/
   if(ate){
+  if (ate) {
     FoodSpawn();
   }
   for (int rows = 0; rows < 8; rows++) {
@@ -55,11 +56,10 @@ void FoodSpawn() {
   Serial.println("");
   for (int i = 8; i >= 0; i--) {
     if (mapWithFood[row] - (byte(pow(2, i))) > 0) {
-      mapWithFood[row] -=byte(pow(2, i));
+      mapWithFood[row] -= byte(pow(2, i));
       character = character + "1";
     } else if ((mapWithFood[row] - (byte(pow(2, i))) < 0)) {
       character = character + "0";
-      
     }
   }
   Serial.print("character: ");
@@ -77,7 +77,7 @@ void FoodSpawn() {
     Serial.println("");
   }
   mapWithFood[row] = byte(character.toInt());
-  ate=false;
+  ate = false;
   for (int i = 0; i < 8; i++) {
     Serial.print(mapWithFood[i], BIN);
     Serial.print(",");
