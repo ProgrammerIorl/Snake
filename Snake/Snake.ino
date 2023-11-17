@@ -6,14 +6,22 @@ uint8_t colPins[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };
 int xValue, yValue;
 byte mapWithFood[8] = { B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000 };
 String character = "";
-bool ate;
-void setup() {
+byte direction = 0;
 
+String mapping[8] = { "00000000", "00000000", "00000000", "00000000", "00000000", "00000000", "00000000", "00000000" };
+bool ate = true, start = false;
+byte Pos[2];
+void setup() {
+randomSeed(millis());
   Serial.begin(9600);
   // Turn everything to low
   for (int i = 0; i < 8; i++) {
     pinMode(colPins[i], OUTPUT);
     pinMode(rowPins[i], OUTPUT);
+  }
+  for (int i = 0; i < 8; i++) {
+    mapWithFood[i] = byte(mapping[i].toInt());
+    Serial.println(mapWithFood[i]);
   }
 }
 
@@ -21,15 +29,10 @@ void setup() {
 void loop() {
 
 
-  /*xValue = analogRead(joyX);
-  yValue = analogRead(joyY);
-  Serial.print(xValue);
-  Serial.print("\t");
-  Serial.println(yValue);*/
-  if(ate){
-  if (ate) {
+  Move();
+  /*if (ate) {
     FoodSpawn();
-  }
+  }*/
   for (int rows = 0; rows < 8; rows++) {
     for (int k = 0; k < 8; k++) digitalWrite(colPins[k], HIGH);
     digitalWrite(rowPins[rows], HIGH);
@@ -83,4 +86,70 @@ void FoodSpawn() {
     Serial.print(",");
   }
   Serial.println("");
+}
+
+void Move() {
+  
+  xValue = analogRead(joyX);
+  yValue = analogRead(joyY);
+  if (start == false) {
+  byte Pos[2] = { random(0, 8), random(0, 8) };
+    mapping[Pos[0]][Pos[1]] = '1';
+    for (int i = 0; i < 8; i++) {
+      mapWithFood[i] = byte(mapping[i].toInt());
+      Serial.println(mapWithFood[i]);
+    }
+    start = true;
+  }
+  if (xValue > 1000) {
+    direction = 3;
+  } else if (xValue < 100) {
+    direction = 4;
+  } else if (yValue > 1000) {
+    direction = 1;
+  } else if (yValue < 100) {
+    direction = 0;
+  }
+
+  /*switch (direction) {
+    case 0:
+      mapping[Pos[0]][Pos[0]] = '0';
+      mapping[row - 1][col] = '1';
+      for (int i = 0; i < 8; i++) {
+        mapWithFood[i] = byte(mapping[i].toInt());
+        Serial.println(mapWithFood[i]);
+      }
+      break;
+
+    case 1:
+      mapping[row][col] = '0';
+      mapping[row + 1][col] = '1';
+      for (int i = 0; i < 8; i++) {
+        mapWithFood[i] = byte(mapping[i].toInt());
+        Serial.println(mapWithFood[i]);
+      }
+      break;
+
+    case 2:
+      mapping[row][col] = '0';
+      mapping[row][col + 1] = '1';
+      for (int i = 0; i < 8; i++) {
+        mapWithFood[i] = byte(mapping[i].toInt());
+        Serial.println(mapWithFood[i]);
+      }
+      break;
+
+    case 3:
+      mapping[row][col] = '0';
+      mapping[row][col - 1] = '1';
+      for (int i = 0; i < 8; i++) {
+        mapWithFood[i] = byte(mapping[i].toInt());
+        Serial.println(mapWithFood[i]);
+      }
+      break;
+
+    default:
+
+      break;
+  }*/
 }
