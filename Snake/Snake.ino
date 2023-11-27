@@ -73,8 +73,6 @@ void FoodSpawn() {
   Serial.print("character: ");
   Serial.print(character);
   Serial.println("");
-
-
   Serial.print("character.charAt(col)");
   Serial.print(character.charAt(col));
   Serial.println("");
@@ -94,7 +92,7 @@ void FoodSpawn() {
   }
   Serial.println("");
 }
-byte Pos[2] = { 7, 3 };
+byte Pos[2] = { 7, 7 };
 byte snake;
 
 void Move() {
@@ -120,8 +118,12 @@ void Move() {
         
         if(mapping[i][j]=='1')
         {
-          Serial.println(j);
-          mapWithFood[i]+=pow(2,7-j)+1;
+          if(j<6)
+          {
+            mapWithFood[i]+=pow(2,7-j)+1;
+          }
+          else mapWithFood[i]+=pow(2,7-j);
+          
         }
       }
       Serial.println(" ");
@@ -148,53 +150,74 @@ void Move() {
   }
   if (yValue > 1000) 
   {
-    Serial.print("Moving right ");
+    Serial.print("Moving  right");
     Serial.println("");
     direction = "right";
   }
+
   if (direction == "down") 
   {
     mapping[Pos[0]][Pos[1]] = '0';
     Pos[0] = (Pos[0]+1) % 8;
-    Pos[1] = Pos[1] % 8;
+
     mapping[Pos[0]][Pos[1]] = '1';
     for (int i = 0; i < 8; i++) 
     {
-      for (int j = 8; j > 0; j--) 
+      for (int j = 8; j >= 0; j--) 
       {
-        
         if(mapping[i][j]=='1')
         {
-          Serial.println(j);
-          mapWithFood[i]+=pow(2,8-j)+1;
+         if(Pos[1]<6) 
+         {
+          mapWithFood[i]=pow(2,7-Pos[1])+1;
+          snake=mapWithFood[i];
+         }
+         else 
+         {
+          mapWithFood[i]=pow(2,7-Pos[1]);
+          snake=mapWithFood[i];
+         }
+        }
+        if(mapping[i][j]=='0')
+        {
+          if(Pos[0]==i)
+          {
+            mapWithFood[i]=snake;
+          }
+          else mapWithFood[i]=0;
         }
       }
       Serial.println(" ");
     }
-    
   }
   if (direction == "up") 
   {
-    
+    mapping[Pos[0]][Pos[1]] = '0';
     if(Pos[0]==0)
     {
       Pos[0]=8;
     }
-    mapping[Pos[0]][Pos[1]] = '0';
-    Pos[0] = Pos[0] -1;
-    Pos[1] = Pos[1] % 8;
+    Pos[0] = Pos[0]-1;
+
     mapping[Pos[0]][Pos[1]] = '1';
     
     for (int i = 0; i < 8; i++) 
     {
-      for (int j = 8; j > 0; j--) 
+      for (int j = 8; j >= 0; j--) 
       {
-        
         if(mapping[i][j]=='1')
         {
-         
-          mapWithFood[i]=pow(2,7-j)+1;
+
+         if(Pos[1]<6) 
+         {
+          mapWithFood[i]=pow(2,7-Pos[1])+1;
           snake=mapWithFood[i];
+         }
+         else 
+         {
+          mapWithFood[i]=pow(2,7-Pos[1]);
+          snake=mapWithFood[i];
+         }
         }
         if(mapping[i][j]=='0')
         {
@@ -209,42 +232,62 @@ void Move() {
     }
     
   }
-  if (direction == "left") 
+  if (direction == "right") 
   {
     mapping[Pos[0]][Pos[1]] = '0';
-    Pos[0] = Pos[0] % 8;
-    Pos[1] = (Pos[1]+1) % 8;
+    if(Pos[1]==7)
+    {
+      Pos[1]=-1;
+    }
+
+    Pos[1] = (Pos[1]+1) %8;
     mapping[Pos[0]][Pos[1]] = '1';
     for (int i = 0; i < 8; i++) 
     {
-      for (int j = 8; j > 0; j--) 
+      for (int j = 8; j >= 0; j--) 
       {
-        
         if(mapping[i][j]=='1')
         {
-          Serial.println(j);
-          mapWithFood[i]+=pow(2,8-j)+1;
+         if(Pos[1]==7 || Pos[1]==6)
+          {
+            mapWithFood[i]=pow(2,7-Pos[1]);
+          }else  
+          {
+            mapWithFood[i]=pow(2,7-Pos[1])+1;
+            snake=mapWithFood[i];
+          }
         }
+        
       }
       Serial.println(" ");
     }
     
   }
-  if (direction == "right") 
+  if (direction == "left") 
   {
     mapping[Pos[0]][Pos[1]] = '0';
-    Pos[0] = Pos[0] % 8;
-    Pos[1] = (Pos[1]-1) % 8;
+    if(Pos[1]==0)
+    {
+      Pos[1]=8;
+    }
+    Pos[1] = (Pos[1]-1) %8;
     mapping[Pos[0]][Pos[1]] = '1';
     for (int i = 0; i < 8; i++) 
     {
-      for (int j = 8; j > 0; j--) 
+      for (int j = 8; j >= 0; j--) 
       {
         
         if(mapping[i][j]=='1')
         {
-          Serial.println(j);
-          mapWithFood[i]+=pow(2,8-j)+1;
+         if(Pos[1]==7 || Pos[1]==6)
+         {
+          mapWithFood[i]=pow(2,7-Pos[1]);
+          
+         }else  
+          {
+            mapWithFood[i]=pow(2,7-Pos[1])+1;
+            snake=mapWithFood[i];
+          }
         }
       }
       Serial.println(" ");
@@ -254,6 +297,10 @@ void Move() {
 
   Serial.print("direction: ");
   Serial.println(direction);
+  Serial.print("Position: ");
+  Serial.print(Pos[0]);
+  Serial.print(" ");
+  Serial.println(Pos[1]);
   Serial.println("mapping: ");
   for(int i=0;i<8;i++){
     Serial.println(mapWithFood[i]);
