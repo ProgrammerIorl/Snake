@@ -270,7 +270,7 @@ void setup() {
   Serial.begin(9600);
   if (EEPROM.read(0) == 255) {
     EEPROM.update(0, 0);
-  } else EEPROM.update(0, EEPROM.read(0) + 1);
+  } else EEPROM.update(0,(EEPROM.read(0)+1));
   FoodPos[0] = random(0, 8);
   FoodPos[1] = random(0, 8);
   snakeBody[0][0] = Pos[0];
@@ -426,7 +426,7 @@ void End() {
   byte score[2];
   if (EEPROM.read(0) == 255) {
     EEPROM.update(0, 0);
-  } else EEPROM.update(0, EEPROM.read(0) + 1);
+  } else EEPROM.update(0,(EEPROM.read(0)+1));
   if (EEPROM.read(1) == 255) {
     EEPROM.update(1, length);
   } else if (length > EEPROM.read(1)) {
